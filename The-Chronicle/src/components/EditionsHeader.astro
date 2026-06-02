@@ -116,8 +116,6 @@
       const items = [logo, ...menuItems, contrast]
 
       const tl = gsap.timeline()
-
-      tl.set(this.el, { opacity: 1 })
       
       tl.from(this.el, {
         y: '-100%',
@@ -222,7 +220,7 @@
     border-bottom: 1px solid color(primary);
     background: rgba(color(secondary), 0.85);
     backdrop-filter: blur(15px);
-    opacity: 0; // Starts hidden for intro animation
+    opacity: 1;
 
     &__container {
       @include flex(row, stretch, space-between);
@@ -277,6 +275,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
+
+      @include mq(tablet) {
+        display: none;
+      }
 
       .sb__list {
         display: flex;
