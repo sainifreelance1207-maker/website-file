@@ -3,8 +3,10 @@
 // It is simpler than MainHeader.astro as it primarily provides a way to go back home.
 ---
 
+<!-- Site main header, styled for the Editions page -->
 <header class="site-head is-visible">
   <div class="site-head__container">
+    <!-- Logo block on the left (logo icon + "The Chronicle" text) -->
     <div class="sb-logo">
       <a href="/">
         <img 
@@ -18,13 +20,16 @@
       </a>
     </div>
 
+    <!-- Navigation links in the center -->
     <nav class="sb-menu">
       <ul class="sb__list">
+        <!-- Link back to home page sections -->
         <li class="sb__item">
           <a href="/#stats" class="js-menu-link">
             <span class="sb__text">Departments</span>
           </a>
         </li>
+        <!-- Link to trigger contact modal -->
         <li class="sb__item">
           <a href="#contact" class="js-menu-link">
             <span class="sb__text">Contact</span>
@@ -34,6 +39,7 @@
     </nav>
 
 
+    <!-- Social links block on the right -->
     <ul class="sb-socials">
       <li class="sb__item">
         <a href="https://www.instagram.com/thechronicleattslas?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener">
@@ -43,6 +49,7 @@
       </li>
     </ul>
 
+    <!-- Accessibility/Theme toggle (Light/Dark contrast theme switch) -->
     <button class="sb-contrast js-contrast" type="button">
       <span class="sb__icon" style="--path: path('M10.0996 20C8.71628 20 7.41628 19.7373 6.19961 19.212C4.98294 18.6867 3.92461 17.9743 3.02461 17.075C2.12461 16.1757 1.41228 15.1173 0.887611 13.9C0.362944 12.6827 0.100277 11.3827 0.0996106 10C0.098944 8.61733 0.361611 7.31733 0.887611 6.1C1.41361 4.88267 2.12594 3.82433 3.02461 2.925C3.92328 2.02567 4.98161 1.31333 6.19961 0.788C7.41761 0.262667 8.71761 0 10.0996 0C11.4816 0 12.7816 0.262667 13.9996 0.788C15.2176 1.31333 16.2759 2.02567 17.1746 2.925C18.0733 3.82433 18.7859 4.88267 19.3126 6.1C19.8393 7.31733 20.1016 8.61733 20.0996 10C20.0976 11.3827 19.8349 12.6827 19.3116 13.9C18.7883 15.1173 18.0759 16.1757 17.1746 17.075C16.2733 17.9743 15.2149 18.687 13.9996 19.213C12.7843 19.739 11.4843 20.0013 10.0996 20ZM11.0996 17.925C13.0829 17.675 14.7456 16.804 16.0876 15.312C17.4296 13.82 18.1003 12.0493 18.0996 10C18.0989 7.95067 17.4279 6.18 16.0866 4.688C14.7453 3.196 13.0829 2.325 11.0996 2.075V17.925Z');"></span>
       <span class="u-sr-only">Change contrast</span>
@@ -50,6 +57,7 @@
   </div>
 </header>
 
+<!-- Overlay mask used for the sliding theme toggle transition animation -->
 <div class="js-contrast-mask contrast-mask"></div>
 
 <script>
@@ -65,25 +73,33 @@
    * - Intro animation
    */
   class EditionsHeader {
-    el: HTMLElement
-    contrastButton: HTMLElement
-    contrastMask: HTMLElement
+    el: HTMLElement | null
+    contrastButton: HTMLElement | null
+    contrastMask: HTMLElement | null
     links: NodeListOf<HTMLElement>
+    isTogglingContrast: boolean = false // Prevents rapid double clicks during animation
 
     /**
      * Constructor: Initializes the editions header logic
      */
     constructor() {
+      // Find the main header element
       this.el = document.querySelector('.site-head')
+      
+      // Null-safety: If the header is not on the page, exit constructor
+      if (!this.el) return
+
+      // Find other necessary DOM elements
       this.contrastButton = document.querySelector('.js-contrast')
       this.contrastMask = document.querySelector('.js-contrast-mask')
       this.links = this.el.querySelectorAll('.js-menu-link')
 
+      // Initialize events and animation
       this.init()
     }
 
     /**
-     * Init
+     * Init: Set up event listeners and run the entrance animation
      */
     init() {
       this.bindEvents()
@@ -91,7 +107,7 @@
     }
 
     /**
-     * Bind events
+     * Bind events: Attach click listeners to menu links and contrast buttons
      */
     bindEvents() {
       if (this.contrastButton) {
@@ -104,23 +120,27 @@
     }
 
     /**
-     * Intro animation
+     * Intro animation: Animates the header sliding down and items staggering into place
      */
     intro() {
+      if (!this.el) return
+      
       const logo = this.el.querySelector('.logo-img')
       const menuItems = this.el.querySelectorAll('.sb__item')
       const contrast = this.contrastButton
 
-      const items = [logo, ...menuItems, contrast]
+      const items = [logo, ...menuItems, contrast].filter(Boolean)
 
       const tl = gsap.timeline()
       
+      // Slide the entire header into view
       tl.from(this.el, {
         y: '-100%',
         duration: 1.5,
         ease: 'expo.inOut',
       }, 0.5)
 
+      // Stagger items descending into view
       tl.from(items, {
         y: '-100%',
         duration: 1.2,
@@ -130,24 +150,25 @@
     }
 
     /**
-     * Move to section
+     * Move to section: Handles smooth scrolling via Lenis, or triggers Contact modal
      */
     moveToSection(e) {
       const id = e.currentTarget.getAttribute('href')
 
+      // Intercept contact link and trigger global Contact Modal
       if (id === '#contact') {
         e.preventDefault()
         Emitter.emit('openContact')
         return
       }
 
-      // If it's an external link or a complex path like /#stats, don't prevent default
+      // If it's an external link or a complex path like /#stats, navigate normally
       if (id.startsWith('/')) {
         return
       }
       
       e.preventDefault()
-      // @ts-ignore - window.lenis is initialized in index.astro
+      // @ts-ignore - window.lenis is initialized in editions.astro / index.astro
       if (window.lenis) {
         window.lenis.scrollTo(id, {
           duration: 1.5,
@@ -157,9 +178,14 @@
     }
 
     /**
-     * Toggle contrast: Switches light/dark theme with a sliding mask animation
+     * Toggle contrast: Switches light/dark theme with a sliding mask animation.
+     * Includes double-click protection to prevent visual glitches.
      */
     toggleContrast() {
+      // If an animation is already in progress, ignore subsequent clicks
+      if (this.isTogglingContrast) return
+      this.isTogglingContrast = true
+
       let fromX = '0'
       let toX = '-100%'
 
@@ -170,33 +196,46 @@
       }
 
       // Animate the mask to sweep across the screen
-      gsap.fromTo(
-        this.contrastMask,
-        { x: fromX },
-        {
-          x: toX,
-          duration: 1,
-          ease: 'expo.inOut',
-          onComplete: () => {
-            // Reset position after animation finishes
-            this.contrastMask.style.transform = ''
-            
-            // Apply the actual CSS class to swap colors site-wide
-            if (toX === '0') {
-              document.documentElement.classList.remove('theme-contrasted')
-            } else {
-              document.documentElement.classList.add('theme-contrasted')
-            }
+      if (this.contrastMask) {
+        gsap.fromTo(
+          this.contrastMask,
+          { x: fromX },
+          {
+            x: toX,
+            duration: 1,
+            ease: 'expo.inOut',
+            onComplete: () => {
+              // Reset position after animation finishes
+              if (this.contrastMask) this.contrastMask.style.transform = ''
+              
+              // Apply the actual CSS class to swap colors site-wide
+              if (toX === '0') {
+                document.documentElement.classList.remove('theme-contrasted')
+              } else {
+                document.documentElement.classList.add('theme-contrasted')
+              }
 
-            Emitter.emit(
-              'contrastchange',
-              document.documentElement.classList.contains('theme-contrasted')
-                ? 'contrasted'
-                : 'default'
-            )
-          },
+              // Release the animation lock
+              this.isTogglingContrast = false
+
+              Emitter.emit(
+                'contrastchange',
+                document.documentElement.classList.contains('theme-contrasted')
+                  ? 'contrasted'
+                  : 'default'
+              )
+            },
+          }
+        )
+      } else {
+        // Fallback if mask is missing
+        if (toX === '0') {
+          document.documentElement.classList.remove('theme-contrasted')
+        } else {
+          document.documentElement.classList.add('theme-contrasted')
         }
-      )
+        this.isTogglingContrast = false
+      }
 
       if (toX !== '0') {
         document.documentElement.classList.add('theme-contrasted')
@@ -209,6 +248,7 @@
 </script>
 
 <style lang="scss">
+  /* Main site header block styles */
   .site-head {
     position: fixed;
     top: 0;
@@ -220,25 +260,27 @@
     border-bottom: 1px solid color(primary);
     opacity: 1;
 
+    /* Inner flexbox container to align logo, menu, socials, and contrast button */
     &__container {
       @include flex(row, stretch, space-between);
       width: 100%;
-      height: 4.21875rem;
+      height: 4.21875rem; /* Matches the scaled-up desktop height */
 
       @include mq(phone) {
-        height: 4rem;
+        height: 4rem; /* Mobile view height constraint */
       }
     }
 
+    /* Logo area on the left side of the header */
     .sb-logo {
       padding: 0 1.5rem;
-      width: 13rem; // Matches right side plus a bit for text
+      width: 13rem; // Wide container to display logo + text side-by-side
       height: 4.21875rem;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      border-right: 1px solid color(primary);
+      border-right: 1px solid color(primary); /* Separation line between logo and navigation */
 
       @include mq(phone) {
         width: 4rem;
@@ -246,6 +288,7 @@
         padding: 0;
       }
 
+      /* Logo link alignment and scaling hover transition */
       a {
         display: flex;
         align-items: center;
@@ -258,6 +301,7 @@
         }
       }
 
+      /* Logo graphic icon settings */
       .logo-img {
         width: 2.25rem;
         height: 2.25rem;
@@ -269,6 +313,7 @@
         }
       }
 
+      /* Cursive/italic brand title next to the logo image */
       .logo-text {
         font: italic 400 15px / 1 font-family(editorial);
         letter-spacing: 0.05em;
@@ -276,11 +321,12 @@
         white-space: nowrap;
 
         @include mq(phone) {
-          display: none;
+          display: none; // Hides branding text on mobile screen sizes
         }
       }
     }
 
+    /* Navigation menu in the middle of the header */
     .sb-menu {
       flex-grow: 1;
       display: flex;
@@ -297,6 +343,7 @@
         overflow: hidden;
       }
 
+      /* Navigation menu item links and interactive states */
       a {
         position: relative;
         display: flex;
@@ -314,6 +361,7 @@
           font-size: 12px;
         }
 
+        /* Hover animation line styling */
         .sb__text {
           position: relative;
           display: inline-block;
@@ -332,6 +380,7 @@
           }
         }
 
+        /* Expands the underline line on hover */
         &:hover {
           .sb__text:before {
             scale: 1 1;
@@ -341,15 +390,16 @@
       }
     }
 
+    /* Social icons container on the right side of the header */
     .sb-socials {
       margin: 0;
       padding: 0;
       display: flex;
       list-style: none;
-      border-left: 1px solid color(primary);
+      border-left: 1px solid color(primary); /* Separation line between navigation and socials */
 
       @include mq(phone) {
-        display: none;
+        display: none; // Hidden on mobile views
       }
 
       .sb__item {
@@ -357,6 +407,7 @@
         overflow: hidden;
       }
 
+      /* Social link button wrapper styling & hover background fill */
       a {
         display: flex;
         align-items: center;
@@ -372,6 +423,7 @@
         }
       }
 
+      /* Custom icon utilizing clip-path variable rules */
       .sb__icon {
         display: block;
         width: 20px;
@@ -381,6 +433,7 @@
       }
     }
 
+    /* Dark/Light mode theme toggle button */
     .sb-contrast {
       width: 4.21875rem;
       height: 4.21875rem;
@@ -416,6 +469,7 @@
     }
   }
 
+  /* Full screen sliding panel animation mask for theme swap transition */
   .contrast-mask {
     position: fixed;
     top: 0;

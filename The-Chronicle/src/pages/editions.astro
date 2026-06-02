@@ -435,15 +435,23 @@ const marquees = marqueeRows.map((row, rowIndex) => {
     <CustomScrollbar />
 
     <script>
+      // Import GSAP animation library, SplitType for text animations, and Lenis for smooth scrolling
       import { gsap } from 'gsap';
       import { ScrollTrigger } from 'gsap/ScrollTrigger';
       import SplitType from 'split-type';
       import Lenis from 'lenis';
 
+      // Register ScrollTrigger plugin with GSAP
       gsap.registerPlugin(ScrollTrigger);
 
       document.addEventListener("DOMContentLoaded", () => {
+        // Initialize Lenis smooth scroll instance
         const lenis = new Lenis();
+        
+        // Expose Lenis instance globally so that CustomScrollbar and EditionsHeader can access scroll API methods
+        (window as any).lenis = lenis;
+
+        // Keep ScrollTrigger animations in sync with Lenis smooth scroll ticks
         lenis.on("scroll", ScrollTrigger.update);
         gsap.ticker.add((time) => lenis.raf(time * 1000));
         gsap.ticker.lagSmoothing(0);
