@@ -906,12 +906,12 @@ const awards = {
         }
 
         &__name {
-          font: 700 6.5625rem / 0.82 font-family(bigger);
+          font: 700 clamp(3rem, 5vw, 6.5625rem) / 0.82 font-family(bigger);
           word-break: break-word;
           text-transform: uppercase;
 
           @include mq(desktop-xs) {
-            font-size: 5rem;
+            font-size: clamp(2.5rem, 4.5vw, 5rem);
           }
 
           @include mq(tablet-sm) {
