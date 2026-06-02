@@ -1221,17 +1221,20 @@ import '../../styles/global.scss'
             transformPerspective: 1600,
             force3D: true,
           });
-
-          // Render front page: page index = 2k - 1
-          const frontIdx = 2 * k - 1;
-          renderPageCanvas(frontIdx, pageFront);
-
-          // Render back page: page index = 2k
-          const backIdx = 2 * k;
-          renderPageCanvas(backIdx, pageBack);
-
           sheet.dataset.sheetIndex = String(k);
         }
+        
+        // Render first 2 sheets synchronously so the user sees something immediately
+        for (let k = 1; k <= Math.min(2, totalSheets); k++) {
+           await renderSheetCanvases(k);
+        }
+
+        // The rest are rendered asynchronously in background to avoid blocking and crashing on mobile
+        (async () => {
+          for (let k = 3; k <= totalSheets; k++) {
+             await renderSheetCanvases(k);
+          }
+        })();
 
         book.addEventListener('click', (e) => {
           if (isFlipping) return;
@@ -1257,6 +1260,17 @@ import '../../styles/global.scss'
         scrubMax.textContent = totalPages.toString();
       }
 
+      async function renderSheetCanvases(k: number) {
+          const sheet = document.getElementById(`sheet-${k}`);
+          if(!sheet) return;
+          const pageFront = sheet.querySelector('.page-front') as HTMLElement;
+          const pageBack = sheet.querySelector('.page-back') as HTMLElement;
+          const frontIdx = 2 * k - 1;
+          await renderPageCanvas(frontIdx, pageFront);
+          const backIdx = 2 * k;
+          await renderPageCanvas(backIdx, pageBack);
+      }
+
       // Render a PDF page onto canvas inside a container
       async function renderPageCanvas(pageNum: number, container: HTMLElement) {
         if (pageNum > totalPages) {
@@ -1278,8 +1292,10 @@ import '../../styles/global.scss'
           container.appendChild(canvas);
           const context = canvas.getContext('2d');
 
-          // High DPI rendering: scale by 2
-          const viewport = page.getViewport({ scale: 2.0 });
+          // High DPI rendering: scale by 2 on desktop, lower on mobile to prevent crashes
+          const isMobile = window.innerWidth <= 768;
+          const scale = isMobile ? 1.0 : 2.0;
+          const viewport = page.getViewport({ scale: scale });
           canvas.width = viewport.width;
           canvas.height = viewport.height;
 
