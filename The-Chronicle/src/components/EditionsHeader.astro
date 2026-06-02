@@ -7,16 +7,14 @@
   <div class="site-head__container">
     <div class="sb-logo">
       <a href="/">
-        <!-- The logo image. Displayed at 48x48 pixels. -->
         <img 
           src="/images/logo.png" 
           alt="The Chronicle Logo" 
           class="logo-img"
-          width="48"
-          height="48"
+          width="40"
+          height="40"
         />
-        <!-- Hidden text for screen readers (accessibility) -->
-        <span class="u-sr-only">The Chronicle</span>
+        <span class="logo-text">The Chronicle</span>
       </a>
     </div>
 
@@ -217,15 +215,15 @@
     left: 0;
     z-index: 100;
     width: 100%;
-    border-bottom: 1px solid color(primary);
     background: color(secondary);
     backdrop-filter: blur(15px);
+    border-bottom: 1px solid color(primary);
     opacity: 1;
 
     &__container {
       @include flex(row, stretch, space-between);
       width: 100%;
-      height: 6rem;
+      height: 4.21875rem;
 
       @include mq(phone) {
         height: 4rem;
@@ -233,39 +231,52 @@
     }
 
     .sb-logo {
-      padding: 1.5rem;
-      width: 12rem; // Matches right side icons width (6rem + 6rem)
-      height: 6rem;
-      border-left: 1px solid color(primary);
-      border-right: 1px solid color(primary);
+      padding: 0 1.5rem;
+      width: 13rem; // Matches right side plus a bit for text
+      height: 4.21875rem;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      border-right: 1px solid color(primary);
 
       @include mq(phone) {
         width: 4rem;
         height: 4rem;
-        border-left: 0;
+        padding: 0;
       }
 
       a {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
         transition: transform 0.6s ease(out-expo);
 
         &:hover {
-          transform: scale(1.1) rotate(5deg);
+          transform: scale(1.05);
         }
       }
 
       .logo-img {
-        width: 3rem;
-        height: 3rem;
+        width: 2.25rem;
+        height: 2.25rem;
         object-fit: contain;
 
         @include mq(phone) {
           width: 2rem;
           height: 2rem;
+        }
+      }
+
+      .logo-text {
+        font: italic 400 15px / 1 font-family(editorial);
+        letter-spacing: 0.05em;
+        color: color(primary);
+        white-space: nowrap;
+
+        @include mq(phone) {
+          display: none;
         }
       }
     }
@@ -288,8 +299,10 @@
 
       a {
         position: relative;
-        display: block;
-        padding: 2rem 2.5rem;
+        display: flex;
+        align-items: center;
+        padding: 0 2rem;
+        height: 100%;
         text-decoration: none;
         color: color(primary);
         font: 400 14px / 1 font-family(fraktion);
@@ -348,8 +361,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 6rem;
-        height: 6rem;
+        width: 4.21875rem;
+        height: 4.21875rem;
         color: color(primary);
         transition: background 0.4s ease, color 0.4s ease;
 
@@ -369,8 +382,8 @@
     }
 
     .sb-contrast {
-      width: 6rem;
-      height: 6rem;
+      width: 4.21875rem;
+      height: 4.21875rem;
       border: 0;
       border-right: 1px solid color(primary);
       background: none;

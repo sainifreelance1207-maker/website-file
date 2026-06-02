@@ -22,6 +22,10 @@
 
     border-top: 1px solid color(secondary);
 
+    :global(.theme-editions) & {
+      border-top-color: color(primary);
+    }
+
     @include mq(phone) {
       padding: 1rem;
     }
@@ -31,6 +35,10 @@
         display: block;
         color: color(secondary);
         text-decoration: none;
+
+        :global(.theme-editions) & {
+          color: color(primary);
+        }
 
         &:hover,
         &:focus-visible {
