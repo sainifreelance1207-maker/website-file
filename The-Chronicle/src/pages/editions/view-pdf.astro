@@ -1138,6 +1138,29 @@ import '../../styles/global.scss'
         pdfUrl = 'https://sainifreelance1207-maker.github.io/magazine/The%20Chronicle%20%231.pdf';
       }
 
+      // Security check: Validate the PDF URL to prevent loading arbitrary third-party URLs (phishing / CSRF injection)
+      try {
+        const parsedUrl = new URL(pdfUrl, window.location.origin);
+        const allowedHosts = [
+          'sainifreelance1207-maker.github.io',
+          window.location.hostname,
+          'localhost',
+          '127.0.0.1'
+        ];
+        
+        // Also allow local/relative path references
+        const isRelative = !pdfUrl.startsWith('http://') && !pdfUrl.startsWith('https://');
+        
+        if (!isRelative && !allowedHosts.includes(parsedUrl.hostname)) {
+          // If hostname is not in the allowed list, reject and fall back to the default pdf
+          console.warn('Blocked loading of PDF from untrusted host:', parsedUrl.hostname);
+          pdfUrl = 'https://sainifreelance1207-maker.github.io/magazine/The%20Chronicle%20%231.pdf';
+        }
+      } catch (e) {
+        // Fallback to default if URL is completely invalid
+        pdfUrl = 'https://sainifreelance1207-maker.github.io/magazine/The%20Chronicle%20%231.pdf';
+      }
+
       docTitle.textContent = docName;
 
       // Initialize loader text
