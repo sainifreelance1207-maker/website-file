@@ -1,0 +1,543 @@
+---
+import EditionsHeader from '../components/EditionsHeader.astro'
+import MainFooter from '../components/MainFooter.astro'
+import CustomScrollbar from '../components/CustomScrollbar.astro'
+import ContactModal from '../components/ContactModal.astro'
+import '../styles/global.scss'
+
+const editions = [
+  { title: "The Beginning", subtitle: "Issue 01: The Beginning", file: "/editions/view-pdf?pdf=https%3A%2F%2Fsainifreelance1207-maker.github.io%2Fmagazine%2FThe%2520Chronicle%2520%25231.pdf", cover: "/images/editions/edition-1.jpg" },
+  { title: "Beyond The Years", subtitle: "Issue 02: Beyond The Years", file: "/editions/view-pdf?pdf=https%3A%2F%2Fsainifreelance1207-maker.github.io%2Fmagazine%2FThe%2520Chronicle%25202nd%2520Issue_%2520Beyond%2520The%2520Years_compressed.pdf&title=Beyond%20The%20Years", cover: "/images/editions/edition-2.jpg" },
+];
+
+const magazinePhotos = [
+  "https://sainifreelance1207-maker.github.io/magazine/090d6567-3b40-46a8-9304-8e95b5fa2dcb.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/241db905-0636-4e49-821c-a8b2ea3463d4.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/2ab504d7-c8ef-41be-a6b9-530371bf1352.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/3193f4b5-52a7-48fb-8dc4-1f3a9917995f.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/54c97971-920c-423e-becf-382e0dc088bf.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/56c8831e-6ac5-44f9-a31b-d949160e62b3.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/6cb96537-c013-4a54-ab36-52e42b97da7c.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/71e95098-4ba2-4e86-bca3-4896761daabd.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/977614e0-9811-40df-acbe-85961056053f.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/a516b1e6-03b9-43ee-83cc-1ff74743e093.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/c12146d2-fe22-4398-b879-d7cf1f2a0b48.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/c3ca90c9-88ef-4f84-b308-5c0a1be6bdd0.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/d947a35d-a8be-448c-92b7-2e8cd0393f81.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/ea876b39-7598-444f-9bac-1984feec85ae.jpg",
+  "https://sainifreelance1207-maker.github.io/magazine/fd5dffac-d374-4e64-8f31-44c15006a9ba.jpg",
+];
+
+function shuffle<T>(array: T[]): T[] {
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+const pickRandomPhoto = () =>
+  magazinePhotos[Math.floor(Math.random() * magazinePhotos.length)];
+
+const marqueeRows = [
+  { id: "marquee-1", label: "UNTITLED", textIndex: 1 },
+  { id: "marquee-2", label: "UNFILTERED", textIndex: 3 },
+  { id: "marquee-3", label: "UNWRITTEN", textIndex: 1 },
+  { id: "marquee-4", label: "UNSCRIPTED", textIndex: 3 },
+];
+
+const shuffledMarqueePhotos = shuffle(
+  Array.from({ length: marqueeRows.length * 4 }, pickRandomPhoto),
+);
+
+const marquees = marqueeRows.map((row, rowIndex) => {
+  const photos = shuffledMarqueePhotos.slice(rowIndex * 4, rowIndex * 4 + 4);
+  const items: Array<{ type: "image"; src: string } | { type: "text"; label: string }> = [];
+  let photoIndex = 0;
+
+  for (let i = 0; i < 5; i++) {
+    if (i === row.textIndex) {
+      items.push({ type: "text", label: row.label });
+    } else {
+      items.push({ type: "image", src: photos[photoIndex++] });
+    }
+  }
+
+  return { id: row.id, items };
+});
+---
+
+<html lang="en" class="is-loaded theme-editions">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>The Chronicle</title>
+
+    <meta
+      name="description"
+      content="The official website of The Chronicle, a magazine society showcasing creative works, articles, and college life." />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://the-chronicle.vercel.app/" />
+
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon-96x96.png"
+      sizes="96x96"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href="/icons/favicon-48x48.png"
+      sizes="48x48"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/icons/apple-touch-icon.png"
+    />
+    <meta name="apple-mobile-web-app-title" content="The Chronicle" />
+
+    <meta name="theme-color" content="#dbc2a6" />
+    <meta name="msapplication-navbutton-color" content="#dbc2a6" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="#dbc2a6" />
+
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="The Chronicle" />
+    <meta property="og:description" content="The official website of The Chronicle, a magazine society showcasing creative works, articles, and college life." />
+    <meta property="og:url" content="https://the-chronicle.vercel.app/" />
+    <meta property="og:site_name" content="The Chronicle" />
+    <meta property="og:image" content="/images/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="675" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="/images/og-image.png" />
+
+    <link
+      rel="preload"
+      href="/fonts/PPEditorialNew-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/PPEditorialNew-Ultralight.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/PPFraktionMono-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/PPFraktionMono-Bold.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="preload"
+      href="/fonts/Bigger-Display.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin="anonymous"
+    />
+
+    <style lang="scss">
+      @font-face {
+        font-family: "Bigger Display";
+        src: url("/fonts/Bigger-Display.woff2") format("woff2");
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        width: 100%;
+        min-height: 100vh;
+        font-family: "Bigger Display", sans-serif;
+        background-color: color(secondary);
+        color: color(primary);
+        overflow-x: hidden;
+      }
+
+      .editions-page {
+        padding-top: 6rem;
+
+        @media (max-width: 900px) {
+          padding-top: 4rem;
+        }
+      }
+
+      // Marquee Styles
+      section.marquees {
+        height: 150vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background-color: color(primary);
+        color: color(shadow);
+        overflow: hidden;
+      }
+
+      .marquee-container {
+        position: relative;
+        width: 125%;
+        height: 250px;
+        display: flex;
+        gap: 1em;
+        margin-bottom: 1em;
+        overflow: hidden;
+      }
+
+      .marquee {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 1em;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        h1 {
+          text-transform: uppercase;
+          font-size: clamp(30px, 8vw, 100px);
+          line-height: 1;
+          white-space: nowrap;
+          font-family: font-family(fraktion);
+          font-weight: 400;
+        }
+      }
+
+      #marquee-1 .marquee,
+      #marquee-3 .marquee {
+        left: -15%;
+      }
+
+      .item {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+
+      .item.with-text {
+        flex: 1.5;
+      }
+
+      // Card Styles
+      .cards-section {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        background-color: color(shadow);
+        overflow: hidden;
+      }
+
+      .cards-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      .card {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 450px;
+        perspective: 1000px;
+        z-index: 10;
+      }
+
+      .card-float-wrapper {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100%;
+        height: 100%;
+        animation: floating 3s infinite ease-in-out;
+      }
+
+      .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transform-style: preserve-3d;
+      }
+
+      .flip-card-front,
+      .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 0.8em;
+        overflow: hidden;
+        border: 1px solid color(primary);
+      }
+
+      .flip-card-front img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .flip-card-back {
+        padding: 2em;
+        background-color: color(secondary);
+        color: color(primary);
+        transform: rotateY(180deg);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border: 1px solid color(primary);
+
+        h3 {
+          font-size: 2rem;
+          margin-bottom: 0.5rem;
+          font-family: font-family(bigger);
+          font-weight: 900;
+          line-height: 1.1;
+          text-transform: uppercase;
+        }
+
+        p {
+          font-size: 1.1rem;
+          margin-bottom: 2rem;
+          font-family: font-family(fraktion);
+          font-weight: 600;
+          opacity: 0.9;
+        }
+
+        .btn {
+          padding: 0.8rem 2rem;
+            background: color(primary);
+            color: color(white);
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 0.85rem;
+            border-radius: 0.2rem;
+            transition: all 0.3s ease;
+
+            &:hover {
+              transform: scale(1.05);
+              background: color(white);
+            }
+        }
+      }
+
+      @keyframes floating {
+        0%, 100% { transform: translate(-50%, -50%); }
+        50% { transform: translate(-50%, -55%); }
+      }
+
+      @media (max-width: 900px) {
+        .marquee-container {
+          width: 250%;
+          height: 150px;
+        }
+        .item h1 {
+          font-size: clamp(20px, 6vw, 60px);
+        }
+        .card {
+          width: 240px;
+          height: 360px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <EditionsHeader />
+
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <main class="editions-page">
+          <section class="marquees">
+            {marquees.map((marquee) => (
+              <div class="marquee-container" id={marquee.id}>
+                <div class="marquee">
+                  {marquee.items.map((item) =>
+                    item.type === "text" ? (
+                      <div class="item with-text">
+                        <h1>{item.label}</h1>
+                      </div>
+                    ) : (
+                      <div class="item">
+                        <img src={item.src} alt="" loading="lazy" decoding="async" />
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section class="cards-section">
+            <div class="cards-wrapper js-cards-wrapper">
+              {editions.map((edition, index) => (
+                <div class="card js-card" id={`card-${index + 1}`}>
+                  <div class="card-float-wrapper">
+                    <div class="flip-card-inner">
+                      <div class="flip-card-front js-card-front">
+                        <img src={edition.cover} alt="Edition Cover" />
+                      </div>
+                      <div class="flip-card-back js-card-back">
+                        <h3>{edition.title}</h3>
+                        <p>{edition.subtitle}</p>
+                        <a href={edition.file} target="_blank" class="btn">Read PDF</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </main>
+
+        <MainFooter />
+      </div>
+    </div>
+
+    <ContactModal />
+
+    <CustomScrollbar />
+
+    <script>
+      import { gsap } from 'gsap';
+      import { ScrollTrigger } from 'gsap/ScrollTrigger';
+      import SplitType from 'split-type';
+      import Lenis from 'lenis';
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const lenis = new Lenis();
+        lenis.on("scroll", ScrollTrigger.update);
+        gsap.ticker.add((time) => lenis.raf(time * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        // Marquee Logic
+        const splitText = new SplitType(".item h1", { types: "chars" });
+        const marqueeContainers = document.querySelectorAll(".marquee-container");
+
+        marqueeContainers.forEach((container, index) => {
+          const marquee = container.querySelector(".marquee");
+          const chars = container.querySelectorAll(".char");
+
+          gsap.fromTo(marquee,
+            { x: index % 2 === 0 ? "0%" : "10%" },
+            {
+              x: index % 2 === 0 ? "10%" : "0%",
+              scrollTrigger: {
+                trigger: container,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: true,
+              }
+            }
+          );
+
+          gsap.fromTo(chars,
+            { fontWeight: 400 },
+            {
+              fontWeight: 700,
+              stagger: {
+                each: 0.35,
+                from: index % 2 === 0 ? "end" : "start",
+              },
+              scrollTrigger: {
+                trigger: container,
+                start: "50% bottom",
+                end: "top top",
+                scrub: true,
+              }
+            }
+          );
+        });
+
+        // 3D Card Animation Logic
+        const cards = gsap.utils.toArray(".js-card");
+        const totalScrollHeight = window.innerHeight * 2;
+        const positions = [35, 65]; // Spread only 2 cards
+        const rotations = [-10, 10];
+
+        ScrollTrigger.create({
+          trigger: ".cards-section",
+          start: "top top",
+          end: () => `+=${totalScrollHeight}`,
+          pin: true,
+          pinSpacing: true,
+        });
+
+        cards.forEach((card: HTMLElement, index) => {
+          gsap.to(card, {
+            left: `${positions[index]}%`,
+            rotation: `${rotations[index]}`,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".cards-section",
+              start: "top top",
+              end: () => `+=${window.innerHeight}`,
+              scrub: 0.5,
+            },
+          });
+
+          const frontEl = card.querySelector(".js-card-front") as HTMLElement;
+          const backEl = card.querySelector(".js-card-back") as HTMLElement;
+
+          const staggerOffset = index * 0.1;
+          const startOffset = 0.4 + staggerOffset;
+          const endOffset = 0.9 + staggerOffset;
+
+          ScrollTrigger.create({
+            trigger: ".cards-section",
+            start: "top top",
+            end: () => `+=${totalScrollHeight}`,
+            scrub: 1,
+            onUpdate: (self) => {
+              const progress = self.progress;
+              if (progress >= startOffset && progress <= endOffset) {
+                const animationProgress = (progress - startOffset) / (endOffset - startOffset);
+                const frontRotation = -180 * animationProgress;
+                const backRotation = 180 - 180 * animationProgress;
+                const cardRotation = rotations[index] * (1 - animationProgress);
+
+                frontEl.style.transform = `rotateY(${frontRotation}deg)`;
+                backEl.style.transform = `rotateY(${backRotation}deg)`;
+                card.style.transform = `translate(-50%, -50%) rotate(${cardRotation}deg)`;
+              }
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

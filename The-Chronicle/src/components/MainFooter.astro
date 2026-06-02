@@ -1,0 +1,67 @@
+<footer class="site-foot">
+  <div class="site-foot__logo">
+    <a href="/" class="site-foot__logo-link">
+      <span class="site-foot__wordmark" aria-label="The Chronicle">
+        <span class="site-foot__wordmark-the">The</span>
+        <span class="site-foot__wordmark-name">Chronicle</span>
+      </span>
+    </a>
+  </div><!-- .site-foot__logo -->
+</footer>
+
+<style lang="scss">
+  @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+  .site-foot {
+    @include flex(row, center, center);
+
+    position: relative;
+    z-index: 3;
+
+    padding: 1.5rem;
+
+    border-top: 1px solid color(secondary);
+
+    @include mq(phone) {
+      padding: 1rem;
+    }
+
+    &__logo {
+      &-link {
+        display: block;
+        color: color(secondary);
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible {
+          opacity: 0.75;
+        }
+      }
+    }
+
+    &__wordmark {
+      @include flex(column, center, center);
+
+      line-height: 1;
+      text-align: center;
+
+      &-the {
+        font: 400 0.75rem / 1 font-family(fraktion);
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+      }
+
+      &-name {
+        margin-top: 0.2rem;
+        font-family: 'Great Vibes', cursive;
+        font-size: 3.25rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
+
+        @include mq(phone) {
+          font-size: 2.75rem;
+        }
+      }
+    }
+  }
+</style>
