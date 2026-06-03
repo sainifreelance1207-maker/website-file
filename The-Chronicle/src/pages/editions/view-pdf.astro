@@ -719,7 +719,7 @@ import '../../styles/global.scss'
         <div id="error-container" style="display: none; width: 100%;">
           <div class="error-banner">
             <h3>Unable to load document</h3>
-            <p id="error-message">We couldn't retrieve the PDF. It may be due to CORS issues, a network failure, or an invalid address.</p>
+            <p id="error-message">Please go back and reload the site. This is a network issue.</p>
             <a href="/editions" class="back-btn" style="display: inline-block;">Return to Editions</a>
           </div>
         </div>
@@ -1172,7 +1172,10 @@ import '../../styles/global.scss'
         try {
           const loadingTask = pdfjsLib.getDocument({
             url: pdfUrl,
-            withCredentials: false
+            withCredentials: false,
+            disableRange: true,
+            disableStream: true,
+            disableAutoFetch: true
           });
 
           loadingTask.onProgress = function(progress: any) {
@@ -1218,7 +1221,7 @@ import '../../styles/global.scss'
           console.error("PDF loading error: ", error);
           loaderOverlay.style.display = 'none';
           errorContainer.style.display = 'flex';
-          errorMessage.textContent = `Could not fetch or parse the PDF document from: ${pdfUrl}. (${error.message || error})`;
+          errorMessage.textContent = "Please go back and reload the site. This is a network issue.";
         }
       }
 
