@@ -794,7 +794,7 @@ import '../../styles/global.scss'
       let currentSheetIndex = 0; // 0 is cover sheet unflipped
       let isFlipping = false;
       let zoomScale = 1.0;
-      const MAX_ZOOM = 2.0;
+      const MAX_ZOOM = 3.0;
       const MIN_ZOOM = 0.8;
 
       let baseBookW = 0;
@@ -1822,6 +1822,11 @@ import '../../styles/global.scss'
 
       window.addEventListener('mouseup', (e) => {
         if (isDragging) {
+          // Disable page flipping by dragging/swiping when zoomed in
+          if (zoomScale > 1.05) {
+            isDragging = false;
+            return;
+          }
           const dragEndX = e.clientX;
           const diff = dragEndX - dragStartX;
           const dragThreshold = 80; // pixels
@@ -1835,20 +1840,73 @@ import '../../styles/global.scss'
         }
       });
 
+      // Multitouch pinch-to-zoom gesture tracking for mobile
+      let isPinching = false;
+      let startTouchDist = 0;
+      let startZoomScale = 1.0;
+      let lastPinchTime = 0;
+
+      const workspace = document.getElementById('book-workspace') as HTMLElement;
+
+      workspace.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          isPinching = true;
+          lastPinchTime = Date.now();
+          startTouchDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          startZoomScale = zoomScale;
+          if (e.cancelable) e.preventDefault();
+        }
+      }, { passive: false });
+
+      workspace.addEventListener('touchmove', (e) => {
+        if (isPinching && e.touches.length === 2) {
+          lastPinchTime = Date.now();
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (startTouchDist > 0) {
+            const factor = dist / startTouchDist;
+            zoomScale = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, startZoomScale * factor));
+            applyZoomAndSizing();
+          }
+          if (e.cancelable) e.preventDefault();
+        }
+      }, { passive: false });
+
+      workspace.addEventListener('touchend', (e) => {
+        if (isPinching) {
+          lastPinchTime = Date.now();
+          if (e.touches.length < 2) {
+            isPinching = false;
+            startTouchDist = 0;
+          }
+        }
+      }, { passive: true });
+
       // Swipe Gestures Support for Mobile touch screens
       let touchStartX = 0;
       let touchEndX = 0;
 
       window.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) return; // Ignore multitouch for page flips
         touchStartX = e.changedTouches[0].screenX;
       }, { passive: true });
 
       window.addEventListener('touchend', (e) => {
+        if (isPinching || e.touches.length > 0) return; // Ignore if pinching or other touches active
         touchEndX = e.changedTouches[0].screenX;
         handleSwipe();
       }, { passive: true });
 
       function handleSwipe() {
+        // If we recently pinched, or if we are zoomed in, don't flip pages
+        if (Date.now() - lastPinchTime < 300) return;
+        if (zoomScale > 1.05) return;
+
         const swipeThreshold = 50; // pixels
         if (touchEndX < touchStartX - swipeThreshold) {
           flipForward(); // swiped left -> go next
